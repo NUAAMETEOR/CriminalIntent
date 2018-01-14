@@ -1,6 +1,7 @@
 package cn.edu.nuaa.model;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -19,9 +20,13 @@ public class CrimeRepository {
         initCrimeList();
     }
 
-    public static CrimeRepository getCrimeRepository(Context context) {
+    public static CrimeRepository getCrimeRepository(@NonNull Context context) {
         if (crimeRepository == null) {
-            crimeRepository = new CrimeRepository(context.getApplicationContext());
+            synchronized (CrimeRepository.class) {
+                if (crimeRepository == null) {
+                    crimeRepository = new CrimeRepository(context.getApplicationContext());
+                }
+            }
         }
         return crimeRepository;
     }
@@ -29,7 +34,7 @@ public class CrimeRepository {
     public Crime getCrime(UUID uuid) {
         for (Crime c :
                 crimeList) {
-            if (c.getCrimeId() == uuid) {
+            if (c.getCrimeId() .equals(uuid)) {
                 return c;
             }
         }
@@ -37,7 +42,13 @@ public class CrimeRepository {
     }
 
     private void initCrimeList() {
-        
+        crimeList = new ArrayList<Crime>();
+        for (int i = 0; i < 10; i++) {
+            Crime crime = new Crime();
+            crime.setCrimeTitle("Crime #" + i);
+            crime.setCrimeSolved(i % 2 == 0);
+            crimeList.add(crime);
+        }
     }
 
     public ArrayList<Crime> getCrimeList() {

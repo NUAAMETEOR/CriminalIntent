@@ -1,29 +1,21 @@
 package cn.edu.nuaa.criminalintent;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseFragmentActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreate called");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        FragmentManager fragmentManager = getFragmentManager();
-        if (fragmentManager != null) {
-            Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentContainer);
-            if (fragment == null) {
-                fragment = new CrimeFragment();
-                fragmentManager.beginTransaction().add(R.id.fragmentContainer, fragment).commit();
-            }
-        } else {
-            Log.e(LOG_TAG, "can not get fragment manager");
-        }
+    }
+
+    @Override
+    protected Fragment createFragment() {
+        return new CrimeFragment();
     }
 
     @Override

@@ -21,6 +21,11 @@ public class Crime {
         return crimeDate;
     }
 
+    @Override
+    public String toString() {
+        return crimeTitle;
+    }
+
     public void setCrimeDate(Date crimeDate) {
         this.crimeDate = crimeDate;
     }
