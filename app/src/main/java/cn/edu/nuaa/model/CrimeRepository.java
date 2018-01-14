@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.UUID;
 
 /**
@@ -47,6 +48,7 @@ public class CrimeRepository {
             Crime crime = new Crime();
             crime.setCrimeTitle("Crime #" + i);
             crime.setCrimeSolved(i % 2 == 0);
+            crime.setCrimeDate(Calendar.getInstance().getTime());
             crimeList.add(crime);
         }
     }
