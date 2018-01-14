@@ -16,9 +16,10 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.UUID;
 
 import cn.edu.nuaa.model.Crime;
+import cn.edu.nuaa.model.CrimeRepository;
 
 /**
  * Created by Meteor on 2018/1/12.
@@ -30,6 +31,7 @@ public class CrimeFragment extends Fragment {
     private EditText titleText;
     private Button   dateButton;
     private CheckBox solveOption;
+    public static final String UUID_EXTRA_KEY = "uuid";
 
     @Override
     public void onAttach(Context context) {
@@ -41,7 +43,9 @@ public class CrimeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreate called");
         super.onCreate(savedInstanceState);
-        crimeInst = new Crime();
+        UUID uuid = (UUID) getArguments().getSerializable(UUID_EXTRA_KEY);
+        crimeInst = CrimeRepository.getCrimeRepository(getActivity()).getCrime(uuid);
+        getActivity().setTitle(R.string.activity_crime_title);
     }
 
     @Nullable
@@ -54,12 +58,13 @@ public class CrimeFragment extends Fragment {
             return null;
         }
         titleText = (EditText) v.findViewById(R.id.crimeTitle);
+        titleText.setText(crimeInst.getCrimeTitle());
         dateButton = v.findViewById(R.id.crimeDate);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Calendar         calendar         = Calendar.getInstance();
-        String           currentTime      = simpleDateFormat.format(calendar.getTime());
+        String           currentTime      = simpleDateFormat.format(crimeInst.getCrimeDate());
         dateButton.setText(currentTime);
         solveOption = v.findViewById(R.id.crimeSolved);
+        solveOption.setChecked(crimeInst.isCrimeSolved());
         if (titleText != null) {
             titleText.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -85,6 +90,14 @@ public class CrimeFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    public static CrimeFragment createInstance(UUID crimeId) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(UUID_EXTRA_KEY, crimeId);
+        CrimeFragment crimeFragment = new CrimeFragment();
+        crimeFragment.setArguments(bundle);
+        return crimeFragment;
     }
 
     @Override
