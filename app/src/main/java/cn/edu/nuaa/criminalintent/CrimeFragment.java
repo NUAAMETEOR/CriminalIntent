@@ -1,7 +1,7 @@
 package cn.edu.nuaa.criminalintent;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -46,7 +46,8 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID uuid = (UUID) getArguments().getSerializable(UUID_EXTRA_KEY);
         crimeInst = CrimeRepository.getCrimeRepository(getActivity()).getCrime(uuid);
-        getActivity().setTitle(R.string.activity_crime_title);
+//        getActivity().setTitle(R.string.activity_crime_title);
+        
     }
 
     @Nullable

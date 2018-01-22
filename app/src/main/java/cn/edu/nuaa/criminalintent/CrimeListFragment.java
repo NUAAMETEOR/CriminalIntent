@@ -1,9 +1,9 @@
 package cn.edu.nuaa.criminalintent;
 
-import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -22,7 +22,8 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Crime crime = ((CrimeAdapter) getListAdapter()).getItem(position);
-        Intent intent = new Intent(getActivity(), CrimeActivity.class);
+//        Intent intent = new Intent(getActivity(), CrimeActivity.class);
+        Intent intent = new Intent(getActivity(), ViewPageActivity.class);
         intent.putExtra(CrimeFragment.UUID_EXTRA_KEY, crime.getCrimeId());
         startActivityForResult(intent,CRIME_REQUEST_CODE);
     }

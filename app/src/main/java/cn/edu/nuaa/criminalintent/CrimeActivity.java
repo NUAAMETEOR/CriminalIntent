@@ -1,6 +1,5 @@
 package cn.edu.nuaa.criminalintent;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -16,7 +15,7 @@ public class CrimeActivity extends BaseFragmentActivity {
     }
 
     @Override
-    protected Fragment createFragment() {
+    protected android.support.v4.app.Fragment createFragment() {
         UUID uuid = (UUID) getIntent().getSerializableExtra(CrimeFragment.UUID_EXTRA_KEY);
         return CrimeFragment.createInstance(uuid);
     }
