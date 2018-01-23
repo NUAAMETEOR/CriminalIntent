@@ -1,10 +1,12 @@
 package cn.edu.nuaa.criminalintent;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import cn.edu.nuaa.model.Crime;
@@ -27,12 +30,34 @@ import cn.edu.nuaa.model.CrimeRepository;
  */
 
 public class CrimeFragment extends Fragment {
-    private static final String LOG_TAG = CrimeFragment.class.getName();
+    public static final  String UUID_EXTRA_KEY    = "uuid";
+    private static final String LOG_TAG           = CrimeFragment.class.getName();
+    public static final  String DATE_DIALOG_TAG   = "DATE";
+    public static final  String DATE_INTENT_TAG   = "DATE";
+    public static final  int    DATE_REQUEST_CODE = 0;
     private Crime    crimeInst;
     private EditText titleText;
     private Button   dateButton;
     private CheckBox solveOption;
-    public static final String UUID_EXTRA_KEY = "uuid";
+
+    public static CrimeFragment createInstance(UUID crimeId) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(UUID_EXTRA_KEY, crimeId);
+        CrimeFragment crimeFragment = new CrimeFragment();
+        crimeFragment.setArguments(bundle);
+        return crimeFragment;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DATE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Date date = (Date) data.getSerializableExtra(DATE_INTENT_TAG);
+                crimeInst.setCrimeDate(date);
+                updateButtonText();
+            }
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -47,7 +72,13 @@ public class CrimeFragment extends Fragment {
         UUID uuid = (UUID) getArguments().getSerializable(UUID_EXTRA_KEY);
         crimeInst = CrimeRepository.getCrimeRepository(getActivity()).getCrime(uuid);
 //        getActivity().setTitle(R.string.activity_crime_title);
-        
+
+    }
+
+    private void updateButtonText() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String           currentTime      = simpleDateFormat.format(crimeInst.getCrimeDate());
+        dateButton.setText(currentTime);
     }
 
     @Nullable
@@ -62,9 +93,8 @@ public class CrimeFragment extends Fragment {
         titleText = (EditText) v.findViewById(R.id.crimeTitle);
         titleText.setText(crimeInst.getCrimeTitle());
         dateButton = v.findViewById(R.id.crimeDate);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String           currentTime      = simpleDateFormat.format(crimeInst.getCrimeDate());
-        dateButton.setText(currentTime);
+        updateButtonText();
+        dateButton.setEnabled(true);
         solveOption = v.findViewById(R.id.crimeSolved);
         solveOption.setChecked(crimeInst.isCrimeSolved());
         if (titleText != null) {
@@ -91,15 +121,16 @@ public class CrimeFragment extends Fragment {
                 crimeInst.setCrimeSolved(b);
             }
         });
+        dateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager    fragmentManager    = getActivity().getSupportFragmentManager();
+                DatePickerFragment datePickerFragment = DatePickerFragment.createInstance(crimeInst.getCrimeDate());
+                datePickerFragment.setTargetFragment(CrimeFragment.this, DATE_REQUEST_CODE);
+                datePickerFragment.show(fragmentManager, DATE_DIALOG_TAG);
+            }
+        });
         return v;
-    }
-
-    public static CrimeFragment createInstance(UUID crimeId) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(UUID_EXTRA_KEY, crimeId);
-        CrimeFragment crimeFragment = new CrimeFragment();
-        crimeFragment.setArguments(bundle);
-        return crimeFragment;
     }
 
     @Override
