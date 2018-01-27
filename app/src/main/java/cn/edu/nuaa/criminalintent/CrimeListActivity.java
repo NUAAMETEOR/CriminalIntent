@@ -19,13 +19,11 @@ public class CrimeListActivity extends BaseFragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (getActionBar() != null) {
-            new AlertDialog.Builder(this).setTitle("alert").setMessage("get action bar succ").create().show();
-        }
     }
 
     @Override
     protected android.support.v4.app.Fragment createFragment() {
-        return new CrimeListFragment();
+//        return new CrimeListFragment();//按照书上做的fragment
+        return CustomListFragment.createInstance();//完成了第16张挑战用的fragment
     }
 }

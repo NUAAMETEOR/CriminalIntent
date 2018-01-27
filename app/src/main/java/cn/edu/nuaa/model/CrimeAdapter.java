@@ -1,9 +1,9 @@
 package cn.edu.nuaa.model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -19,23 +19,23 @@ import cn.edu.nuaa.criminalintent.R;
  */
 
 public class CrimeAdapter extends ArrayAdapter<Crime> {
-    private ListFragment listFragment;
+    private Context context;
 
-    public CrimeAdapter(@NonNull Context context, ListFragment listFragment) {
+    public CrimeAdapter(@NonNull Context context) {
         super(context, 0, CrimeRepository.getCrimeRepository(context).getCrimeList());
-        this.listFragment = listFragment;
+        this.context = context;
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
-            convertView = listFragment.getActivity().getLayoutInflater().inflate(R.layout.crime_list_item, null);
+            convertView = ((Activity)context).getLayoutInflater().inflate(R.layout.crime_list_item, null);
         }
-        TextView titleText = convertView.findViewById(R.id.crimeItemTitle);
-        TextView dateText = convertView.findViewById(R.id.crimeItemDate);
-        CheckBox solvedCheckBox = convertView.findViewById(R.id.crimeItemSolved);
-        Crime crime = getItem(position);
+        TextView         titleText        = convertView.findViewById(R.id.crimeItemTitle);
+        TextView         dateText         = convertView.findViewById(R.id.crimeItemDate);
+        CheckBox         solvedCheckBox   = convertView.findViewById(R.id.crimeItemSolved);
+        Crime            crime            = getItem(position);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         titleText.setText(crime.getCrimeTitle());
         dateText.setText(simpleDateFormat.format(crime.getCrimeDate()));
