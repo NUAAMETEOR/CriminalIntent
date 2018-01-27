@@ -44,13 +44,6 @@ public class CrimeRepository {
 
     private void initCrimeList() {
         crimeList = new ArrayList<Crime>();
-        for (int i = 0; i < 10; i++) {
-            Crime crime = new Crime();
-            crime.setCrimeTitle("Crime #" + i);
-            crime.setCrimeSolved(i % 2 == 0);
-            crime.setCrimeDate(Calendar.getInstance().getTime());
-            crimeList.add(crime);
-        }
     }
 
     public ArrayList<Crime> getCrimeList() {

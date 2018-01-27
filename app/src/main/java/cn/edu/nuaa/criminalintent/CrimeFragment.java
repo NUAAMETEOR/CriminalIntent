@@ -1,16 +1,21 @@
 package cn.edu.nuaa.criminalintent;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -66,9 +71,24 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.homeAsUp:
+                if (NavUtils.getParentActivityName(getActivity()) != null) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreate called");
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         UUID uuid = (UUID) getArguments().getSerializable(UUID_EXTRA_KEY);
         crimeInst = CrimeRepository.getCrimeRepository(getActivity()).getCrime(uuid);
 //        getActivity().setTitle(R.string.activity_crime_title);
@@ -83,6 +103,7 @@ public class CrimeFragment extends Fragment {
 
     @Nullable
     @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreateView called");
         View v = inflater.inflate(R.layout.crime_fragment, container, false);
@@ -90,6 +111,7 @@ public class CrimeFragment extends Fragment {
             Log.e(LOG_TAG, "inflate view failed");
             return null;
         }
+
         titleText = (EditText) v.findViewById(R.id.crimeTitle);
         titleText.setText(crimeInst.getCrimeTitle());
         dateButton = v.findViewById(R.id.crimeDate);
@@ -136,6 +158,11 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (NavUtils.getParentActivityName(getActivity()) != null) {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+        }
         Log.d(LOG_TAG, "onActivityCreate called");
     }
 
