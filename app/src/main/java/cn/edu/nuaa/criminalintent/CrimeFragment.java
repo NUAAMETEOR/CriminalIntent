@@ -73,14 +73,17 @@ public class CrimeFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.homeAsUp:
+            case R.id.homeAsUp: {
                 if (NavUtils.getParentActivityName(getActivity()) != null) {
                     NavUtils.navigateUpFromSameTask(getActivity());
                 }
                 return true;
+            }
+            case 16908332: {//返回键，id不是R.id.homeAsUp,是这个,fragment会自动根据manifest文件中配置的父activity返回，无需自行处理
+                return false;
+            }
             default:
-                return super.onOptionsItemSelected(item);
-
+                return false;
         }
     }
 
@@ -90,7 +93,7 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         UUID uuid = (UUID) getArguments().getSerializable(UUID_EXTRA_KEY);
-        crimeInst = CrimeRepository.getCrimeRepository(getActivity()).getCrime(uuid);
+        crimeInst = CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).getCrime(uuid);
 //        getActivity().setTitle(R.string.activity_crime_title);
 
     }
@@ -160,7 +163,7 @@ public class CrimeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (NavUtils.getParentActivityName(getActivity()) != null) {
-                ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
         Log.d(LOG_TAG, "onActivityCreate called");

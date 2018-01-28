@@ -22,7 +22,7 @@ public class CrimeAdapter extends ArrayAdapter<Crime> {
     private Context context;
 
     public CrimeAdapter(@NonNull Context context) {
-        super(context, 0, CrimeRepository.getCrimeRepository(context).getCrimeList());
+        super(context, 0, CrimeRepository.getCrimeRepository(context.getApplicationContext()).getCrimeList());
         this.context = context;
     }
 

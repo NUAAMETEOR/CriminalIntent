@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.UUID;
 
 /**
@@ -12,12 +11,14 @@ import java.util.UUID;
  */
 
 public class CrimeRepository {
-    private static CrimeRepository  crimeRepository;
-    private        ArrayList<Crime> crimeList;
-    private        Context          applicationContext;
+    private static CrimeRepository              crimeRepository;
+    private        ArrayList<Crime>             crimeList;
+    private        Context                      applicationContext;
+    private        CriminalIntentJSONSerializer serializer;
 
     private CrimeRepository(Context context) {
         applicationContext = context;
+        serializer = new CriminalIntentJSONSerializer(applicationContext, "crime.json");
         initCrimeList();
     }
 
@@ -35,16 +36,22 @@ public class CrimeRepository {
     public Crime getCrime(UUID uuid) {
         for (Crime c :
                 crimeList) {
-            if (c.getCrimeId() .equals(uuid)) {
+            if (c.getCrimeId().equals(uuid)) {
                 return c;
             }
         }
         return null;
     }
 
-    private void initCrimeList() {
-        crimeList = new ArrayList<Crime>();
+    public void saveCrime() {
+        serializer.saveCrimes(crimeList);
     }
+
+    private void initCrimeList() {
+//        crimeList = new ArrayList<Crime>();
+        crimeList = serializer.loadCrimeFromFile();
+    }
+
 
     public ArrayList<Crime> getCrimeList() {
         return crimeList;

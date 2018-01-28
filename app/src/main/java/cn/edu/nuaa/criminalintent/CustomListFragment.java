@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import cn.edu.nuaa.model.Crime;
 import cn.edu.nuaa.model.CrimeAdapter;
@@ -111,7 +110,7 @@ public class CustomListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.new_crime_menu: {
                 Crime crime = new Crime();
-                CrimeRepository.getCrimeRepository(getActivity()).getCrimeList().add(crime);
+                CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).getCrimeList().add(crime);
                 Intent intent = new Intent(getActivity(), ViewPageActivity.class);
                 intent.putExtra(CrimeFragment.UUID_EXTRA_KEY, crime.getCrimeId());
                 startActivityForResult(intent, 0);
@@ -135,4 +134,9 @@ public class CustomListFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).saveCrime();
+    }
 }

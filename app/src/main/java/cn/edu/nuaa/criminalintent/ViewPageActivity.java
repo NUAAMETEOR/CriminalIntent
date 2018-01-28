@@ -29,9 +29,9 @@ public class ViewPageActivity extends AppCompatActivity {
         viewPager.setId(R.id.viewPage);
         setContentView(viewPager);
 
-        final ArrayList<Crime> crimeArrayList = CrimeRepository.getCrimeRepository(ViewPageActivity.this).getCrimeList();
+        final ArrayList<Crime> crimeArrayList = CrimeRepository.getCrimeRepository(ViewPageActivity.this.getApplicationContext()).getCrimeList();
         Intent                 intent         = getIntent();
-        Crime                  crime          = CrimeRepository.getCrimeRepository(this).getCrime((UUID) (intent.getSerializableExtra(CrimeFragment.UUID_EXTRA_KEY)));
+        Crime                  crime          = CrimeRepository.getCrimeRepository(this.getApplicationContext()).getCrime((UUID) (intent.getSerializableExtra(CrimeFragment.UUID_EXTRA_KEY)));
         viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {

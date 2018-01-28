@@ -39,6 +39,7 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         ((CrimeAdapter) getListAdapter()).notifyDataSetChanged();
+
     }
 
     @Override
@@ -64,6 +65,7 @@ public class CrimeListFragment extends ListFragment {
         super.onResume();
         setEmptyText("还没有crime记录！");
         ((CrimeAdapter) getListAdapter()).notifyDataSetChanged();
+
     }
 
     @Override
@@ -79,12 +81,18 @@ public class CrimeListFragment extends ListFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).saveCrime();
+    }
+
+    @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_crime_menu: {
                 Crime crime = new Crime();
-                CrimeRepository.getCrimeRepository(getActivity()).getCrimeList().add(crime);
+                CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).getCrimeList().add(crime);
                 Intent intent = new Intent(getActivity(), ViewPageActivity.class);
                 intent.putExtra(CrimeFragment.UUID_EXTRA_KEY, crime.getCrimeId());
                 startActivityForResult(intent, 0);

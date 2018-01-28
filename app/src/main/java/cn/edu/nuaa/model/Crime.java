@@ -1,5 +1,6 @@
 package cn.edu.nuaa.model;
 
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -17,6 +18,7 @@ public class Crime {
     public Crime() {
         crimeId = UUID.randomUUID();
         crimeDate = Calendar.getInstance().getTime();
+        crimeTitle = "";
     }
 
     public Date getCrimeDate() {

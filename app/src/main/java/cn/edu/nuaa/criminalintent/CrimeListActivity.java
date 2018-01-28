@@ -1,7 +1,5 @@
 package cn.edu.nuaa.criminalintent;
 
-import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
