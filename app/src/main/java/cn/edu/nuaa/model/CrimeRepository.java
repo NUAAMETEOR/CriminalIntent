@@ -48,8 +48,13 @@ public class CrimeRepository {
     }
 
     private void initCrimeList() {
-//        crimeList = new ArrayList<Crime>();
         crimeList = serializer.loadCrimeFromFile();
+    }
+
+    public void deleteCrime(int index) {
+        if (index < crimeList.size()) {
+            crimeList.remove(index);
+        }
     }
 
 

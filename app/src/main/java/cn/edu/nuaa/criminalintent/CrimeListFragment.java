@@ -8,10 +8,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import cn.edu.nuaa.model.Crime;
@@ -26,6 +29,13 @@ public class CrimeListFragment extends ListFragment {
     private static String  LOG_TAG            = CrimeListFragment.class.getName();
     private static int     CRIME_REQUEST_CODE = 0;
     private        boolean isSubtitleVisible  = false;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v=super.onCreateView(inflater, container, savedInstanceState);
+        registerForContextMenu(v);
+        return v;
+    }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -78,6 +88,11 @@ public class CrimeListFragment extends ListFragment {
                 menuItem.setTitle(R.string.hide_subtitle);
             }
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.crime_list_context_menu,menu);
     }
 
     @Override

@@ -8,12 +8,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -57,6 +61,56 @@ public class CustomListFragment extends Fragment {
                 startActivityForResult(intent, 0);
             }
         });
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            registerForContextMenu(listView);//低版本使用上下文浮动菜单
+        } else {
+            listView.setChoiceMode(listView.CHOICE_MODE_MULTIPLE_MODAL);//高版本使用上下文操作栏
+            listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+                @Override
+                public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {
+                    /**
+                     * i表示当前选中的item索引，l表示当前选中的item的id，boolean表示是否选中
+                     * 日志显示i总是跟l相等
+                     */
+                    Log.i("ActionMode", "item(" + i + ") selected,id:" + l + ",check state:" + b);
+                }
+
+                @Override
+                public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                    actionMode.getMenuInflater().inflate(R.menu.crime_list_context_menu, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.delete_crime_menu:
+                            CrimeAdapter adapter = (CrimeAdapter) listView.getAdapter();
+                            int count = adapter.getCount();
+                            //一定要从后往前删，不然如果先删除前面的，后面的索引会变，就不对了
+                            for (int i = count - 1; i >= 0; i--) {
+                                if (listView.isItemChecked(i)) {
+                                    CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).deleteCrime(i);
+                                }
+                            }
+                            actionMode.finish();
+                            adapter.notifyDataSetChanged();
+                            return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+
+                }
+            });
+        }
         return view;
     }
 
@@ -105,6 +159,11 @@ public class CustomListFragment extends Fragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getActivity().getMenuInflater().inflate(R.menu.crime_list_context_menu, menu);
+    }
+
+    @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -132,6 +191,19 @@ public class CustomListFragment extends Fragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_crime_menu: {
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                CrimeRepository.getCrimeRepository(getActivity().getApplicationContext()).deleteCrime(info.position);
+                ((CrimeAdapter) listView.getAdapter()).notifyDataSetChanged();
+                return true;
+            }
+        }
+        return super.onContextItemSelected(item);
     }
 
     @Override
