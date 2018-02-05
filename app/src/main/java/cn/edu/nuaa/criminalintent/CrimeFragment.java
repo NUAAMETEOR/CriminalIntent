@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,6 +24,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -122,6 +125,20 @@ public class CrimeFragment extends Fragment {
         dateButton.setEnabled(true);
         solveOption = v.findViewById(R.id.crimeSolved);
         solveOption.setChecked(crimeInst.isCrimeSolved());
+        ImageButton imageButton = v.findViewById(R.id.start_camera);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                startActivity(intent);
+            }
+        });
+        PackageManager pm = getActivity().getPackageManager();
+        boolean hasCamera = (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
+                pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) && Camera.getNumberOfCameras() > 0;
+        if (!hasCamera) {
+            imageButton.setEnabled(false);
+        }
         if (titleText != null) {
             titleText.addTextChangedListener(new TextWatcher() {
                 @Override

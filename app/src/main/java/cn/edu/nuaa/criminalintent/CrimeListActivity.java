@@ -2,16 +2,18 @@ package cn.edu.nuaa.criminalintent;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by Meteor on 2018/1/14.
  */
 
 public class CrimeListActivity extends BaseFragmentActivity {
+    private static final String LOG_TAG=CrimeListActivity.class.getName();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(LOG_TAG, "Screen orientation :" + getWindowManager().getDefaultDisplay().getRotation());
     }
 
     @Override
