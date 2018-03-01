@@ -14,6 +14,7 @@ public class CrimeListActivity extends BaseFragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(LOG_TAG, "Screen orientation :" + getWindowManager().getDefaultDisplay().getRotation());
+        Log.d(LOG_TAG, "Screen width :" + getWindowManager().getDefaultDisplay().getWidth()+"Screen height :" + getWindowManager().getDefaultDisplay().getHeight());
     }
 
     @Override

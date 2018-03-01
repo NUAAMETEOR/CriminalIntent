@@ -20,12 +20,12 @@ import java.util.List;
  */
 @SuppressWarnings("deprecation")
 public class MyCamera implements SurfaceHolder.Callback {
-    private static final String LOG_TAG = MyCamera.class.getName();
-    private Camera.ShutterCallback shutterCallback = new Shutter();
-    private Camera.PictureCallback rawPicCallback  = new RawPictureCallback();
-    private Camera.PictureCallback jpegPicCallback = new RawPictureCallback();
-    private MediaActionSound mediaActionSound=new MediaActionSound();
-    private Camera camera = null;
+    private static final String                 LOG_TAG          = MyCamera.class.getName();
+    private              Camera.ShutterCallback shutterCallback  = new Shutter();
+    private              Camera.PictureCallback rawPicCallback   = new RawPictureCallback();
+    private              Camera.PictureCallback jpegPicCallback  = new JpegPictureCallback();
+    private              MediaActionSound       mediaActionSound = new MediaActionSound();
+    private              Camera                 camera           = null;
     private Activity activity;
     private int cameraIndex = 0;
 
@@ -81,21 +81,30 @@ public class MyCamera implements SurfaceHolder.Callback {
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void initCamera(@NonNull SurfaceView surfaceView) {
-        Camera.Parameters parameters = camera.getParameters();
-        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);//设置闪光灯
-        parameters.setPictureFormat(PixelFormat.JPEG);//设置图像格式
-camera.setAutoFocusMoveCallback(new Camera.AutoFocusMoveCallback() {
-    @Override
-    public void onAutoFocusMoving(boolean b, Camera camera) {
-        if (b) {
-            Log.d(LOG_TAG, "start continuous auto focus");
-        } else {
-            mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE);
-            Log.d(LOG_TAG, "continuous auto focus complete");
+    public void initCamera(@NonNull SurfaceView surfaceView, Camera.ShutterCallback shutterCallback, Camera.PictureCallback rawPicCallback, Camera.PictureCallback pictureCallback) {
+        if (shutterCallback != null) {
+            this.shutterCallback = shutterCallback;
         }
-    }
-});
+        if (rawPicCallback != null) {
+            this.rawPicCallback = rawPicCallback;
+        }
+        if (pictureCallback != null) {
+            this.jpegPicCallback = pictureCallback;
+        }
+        Camera.Parameters parameters = camera.getParameters();
+        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);//设置闪光灯
+        parameters.setPictureFormat(PixelFormat.JPEG);//设置图像格式
+        camera.setAutoFocusMoveCallback(new Camera.AutoFocusMoveCallback() {
+            @Override
+            public void onAutoFocusMoving(boolean b, Camera camera) {
+                if (b) {
+                    Log.d(LOG_TAG, "start continuous auto focus");
+                } else {
+                    mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE);
+                    Log.d(LOG_TAG, "continuous auto focus complete");
+                }
+            }
+        });
         camera.setParameters(parameters);
         setCameraDisplayOrientation();
 
@@ -135,6 +144,7 @@ camera.setAutoFocusMoveCallback(new Camera.AutoFocusMoveCallback() {
         Camera.Size       bestSize   = getBestSupportSize(i1, i2);
         Camera.Parameters parameters = camera.getParameters();
         parameters.setPreviewSize(bestSize.width, bestSize.height);
+        parameters.setPictureSize(bestSize.width,bestSize.height);
         camera.setParameters(parameters);
         startPreview();
     }
@@ -177,7 +187,7 @@ camera.setAutoFocusMoveCallback(new Camera.AutoFocusMoveCallback() {
             @Override
             public void onAutoFocus(boolean b, Camera camera) {
                 if (b) {
-                    Log.i(LOG_TAG, "自动对焦成功。autoFocus()成功后，相机的焦点会被锁定");
+                    Log.i(LOG_TAG, "手动对焦成功。autoFocus()成功后，相机的焦点会被锁定");
                     mediaActionSound.play(MediaActionSound.FOCUS_COMPLETE);
                     camera.cancelAutoFocus();//调用cancelAutoFocus()取消相机的焦点锁定，否则FOCUS_MODE_CONTINUOUS_PICTURE不生效
                     setAutoFocusMode();//对焦模式重新改为不用手点的自动对焦

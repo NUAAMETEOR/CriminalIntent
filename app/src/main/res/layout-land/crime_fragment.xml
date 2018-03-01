@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/textView"
         style="?android:listSeparatorTextViewStyle"
-        android:layout_width="492dp"
+        android:layout_width="431dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
@@ -19,7 +19,7 @@
 
     <EditText
         android:id="@+id/crimeTitle"
-        android:layout_width="492dp"
+        android:layout_width="431dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="64dp"
         android:text="@string/crime_detail_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         android:text="@string/app_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -56,30 +56,43 @@
 
     <CheckBox
         android:id="@+id/crimeSolved"
-        android:text="@string/crime_solved_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:text="@string/crime_solved_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/crimeDate"
-        app:layout_constraintVertical_bias="0.01999998" />
+        app:layout_constraintVertical_bias="0.607" />
 
     <ImageButton
         android:id="@+id/start_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="@+id/crime_photo"
+        app:layout_constraintStart_toStartOf="@+id/crime_photo"
+        app:layout_constraintTop_toBottomOf="@+id/crimeTitle"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <ImageView
+        android:id="@+id/crime_photo"
+        android:layout_width="128dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/crimeTitle"
-        app:layout_constraintEnd_toStartOf="@+id/crimeTitle"
+        app:layout_constraintBottom_toTopOf="@+id/start_camera"
+        app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/btn_star_big_on" />
 </android.support.constraint.ConstraintLayout>
