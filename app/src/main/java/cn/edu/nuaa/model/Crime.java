@@ -12,11 +12,21 @@ import cn.edu.nuaa.common.CrimePhoto;
  */
 
 public class Crime {
-    private UUID   crimeId;
-    private String crimeTitle;
+    private UUID       crimeId;
+    private String     crimeTitle;
     private Date       crimeDate;
     private boolean    crimeSolved;
     private CrimePhoto crimePhoto;
+    private String     suspect;
+
+    public String getSuspect() {
+        return suspect;
+    }
+
+    public void setSuspect(String suspect) {
+        this.suspect = suspect;
+    }
+
     public Crime() {
         crimeId = UUID.randomUUID();
         crimeDate = Calendar.getInstance().getTime();

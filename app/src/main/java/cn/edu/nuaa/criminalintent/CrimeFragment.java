@@ -2,19 +2,25 @@ package cn.edu.nuaa.criminalintent;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,9 +33,12 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import cn.edu.nuaa.common.CrimePhoto;
@@ -49,12 +58,15 @@ public class CrimeFragment extends Fragment {
     public static final  String PHOTO_DIALOG       = "photo_dialog";
     public static final  int    DATE_REQUEST_CODE  = 0;
     public static final  int    PHOTO_REQUEST_CODE = 1;
+    public static final  int    CONTACT_REQUEST_CODE = 2;
     private static final String LOG_TAG            = CrimeFragment.class.getName();
     private Crime     crimeInst;
     private EditText  titleText;
     private Button    dateButton;
     private CheckBox  solveOption;
     private ImageView photoThumb;
+    private Button    chooseSuspect;
+    private Button    sendCrime;
 
     public static CrimeFragment createInstance(UUID crimeId) {
         Bundle bundle = new Bundle();
@@ -90,6 +102,20 @@ public class CrimeFragment extends Fragment {
                 crimeInst.setCrimePhoto(new CrimePhoto(photoFileName));
                 showPhoto();
             }
+        } else if (requestCode == CONTACT_REQUEST_CODE) {
+            Uri contactUri=data.getData();
+            ContentResolver contentResolver=getActivity().getContentResolver();
+            String[] fields=new String[]{ContactsContract.Contacts.DISPLAY_NAME};
+            Cursor cursor = contentResolver.query(contactUri, fields, null, null, null);
+            if (cursor.getCount() == 0) {
+                cursor.close();
+                return;
+            } else {
+                cursor.moveToFirst();
+                crimeInst.setSuspect(cursor.getString(0));
+                chooseSuspect.setText(crimeInst.getSuspect());
+                cursor.close();
+            }
         }
     }
 
@@ -113,7 +139,7 @@ public class CrimeFragment extends Fragment {
     @Nullable
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG_TAG, "onCreateView called");
         View v = inflater.inflate(R.layout.crime_fragment, container, false);
         if (v == null) {
@@ -123,6 +149,7 @@ public class CrimeFragment extends Fragment {
 
         titleText = (EditText) v.findViewById(R.id.crimeTitle);
         titleText.setText(crimeInst.getCrimeTitle());
+        titleText.setSelection(titleText.length());
         dateButton = v.findViewById(R.id.crimeDate);
         updateButtonText();
         dateButton.setEnabled(true);
@@ -154,22 +181,33 @@ public class CrimeFragment extends Fragment {
             imageButton.setEnabled(false);
         }
         if (titleText != null) {
+            titleText.setSelectAllOnFocus(true);
+            titleText.setFocusable(true);
+            titleText.setFocusableInTouchMode(true);
             titleText.addTextChangedListener(new TextWatcher() {
+                private String originalVal;
+
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                    //此处可以保存更改前原来的值
+                    originalVal = charSequence.toString();
                 }
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    /*String text = charSequence.toString().trim();
+                    if (charSequence.length() != originalVal.length() && originalVal.equals(text)) {
+                        titleText.setText(text);
+                    }*/
                     crimeInst.setCrimeTitle(charSequence.toString());
                 }
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-
+//                    titleText.setSelection(editable.length());
                 }
             });
+
         }
         solveOption.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -186,7 +224,46 @@ public class CrimeFragment extends Fragment {
                 datePickerFragment.show(fragmentManager, DATE_DIALOG_TAG);
             }
         });
+        chooseSuspect = v.findViewById(R.id.choose_suspect);
+        if (crimeInst.getSuspect() != null) {
+            chooseSuspect.setText(crimeInst.getSuspect());
+        }
+        chooseSuspect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_PICK);
+                intent.setData(ContactsContract.Contacts.CONTENT_URI);
+                startActivityForResult(intent,CONTACT_REQUEST_CODE);
+            }
+        });
+        sendCrime = v.findViewById(R.id.send_crime);
+        sendCrime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+                intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+
+                //使用createChooser包装intent后，每次都会显示一个选择器。而不用createChooser包装，会使用系统默认的
+                //选择器，该选择器可以选择默认的应用，不必每次都选
+                intent = Intent.createChooser(intent, getString(R.string.send_report));
+                startIntent(intent);
+            }
+        });
         return v;
+    }
+
+    public void startIntent(Intent intent) {
+        PackageManager    pm   =getActivity().getPackageManager();
+        List<ResolveInfo> list =pm.queryIntentActivities(intent, 0);
+        if (list.size()>0) {
+            startActivity(intent);
+        }else{
+            Toast.makeText(getActivity(),"不支持的操作",Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -205,6 +282,25 @@ public class CrimeFragment extends Fragment {
         super.onStart();
         showPhoto();
         Log.d(LOG_TAG, "onStart called");
+    }
+
+    public String getCrimeReport() {
+        String solvedStr;
+        if (crimeInst.isCrimeSolved()) {
+            solvedStr = getString(R.string.crime_report_solved);
+        } else {
+            solvedStr = getString(R.string.crime_report_unsolved);
+        }
+        String suspect = crimeInst.getSuspect();
+        if (suspect == null) {
+            suspect = getString(R.string.crime_report_no_suspect);
+        } else {
+            suspect = getString(R.string.crime_report_suspect, suspect);
+        }
+        String dateFormat = "EEE, MMM dd";
+        String dateStr    = android.text.format.DateFormat.format(dateFormat, crimeInst.getCrimeDate()).toString();
+        String report     = getString(R.string.crime_report_content, crimeInst.getCrimeTitle(), dateStr, solvedStr, suspect);
+        return report;
     }
 
     @Override

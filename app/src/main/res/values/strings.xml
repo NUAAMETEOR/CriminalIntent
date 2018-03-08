@@ -12,4 +12,13 @@
     <string name="delete_crime">Delete Crime</string>
     <string name="new_crime">New Crime</string>
     <string name="empty_tip">No crime record yet :(\npress blank to add a crime</string>
+    <string name="suspect_text">Choose Suspect</string>
+    <string name="send_crime_text">Send Crime Report</string>
+    <string name="crime_report_solved">The case was solved</string>
+    <string name="crime_report_unsolved">The case was not solved</string>
+    <string name="crime_report_no_suspect">There is no suspect.</string>
+    <string name="crime_report_suspect">The suspect is %s.</string>
+    <string name="crime_report_subject">CriminalIntent Crime Report.</string>
+    <string name="send_report">Send crime report via</string>
+    <string name="crime_report_content">%1$s!The crime was discovered on %2$s,%3$s,%4$s</string>
 </resources>
